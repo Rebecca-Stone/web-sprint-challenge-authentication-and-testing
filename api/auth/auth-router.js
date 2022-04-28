@@ -1,7 +1,15 @@
-const router = require('express').Router();
+// Users must be able to call the `[POST] /api/auth/register` endpoint to create a new account, and the `[POST] /api/auth/login` endpoint to get a token.
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+// We also need to make sure nobody without the token can call `[GET] /api/jokes` and gain access to our dad jokes.
+
+// We will hash the user's password using `bcryptjs`, and use JSON Web Tokens and the `jsonwebtoken` library.
+
+// - [ ] An authentication workflow with functionality for account creation and login, implemented inside `api/auth/auth-router.js`.
+
+const router = require("express").Router();
+
+router.post("/register", (req, res) => {
+  res.end("implement register, please!");
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -29,8 +37,8 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post("/login", (req, res) => {
+  res.end("implement login, please!");
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.

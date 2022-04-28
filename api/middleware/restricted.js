@@ -1,3 +1,5 @@
+// - [ ] Middleware used to restrict access to resources from non-authenticated requests, implemented inside `api/middleware/restricted.js`.
+
 module.exports = (req, res, next) => {
   next();
   /*
