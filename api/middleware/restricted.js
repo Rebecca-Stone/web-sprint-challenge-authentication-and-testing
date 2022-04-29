@@ -1,7 +1,20 @@
 // - [ ] Middleware used to restrict access to resources from non-authenticated requests, implemented inside `api/middleware/restricted.js`.
+const { JWT_SECRET } = require("../secrets");
+const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  next();
+  const token = req.headers.authorization;
+  if (!token) {
+    return next({ status: 401, message: "token required" });
+  }
+  jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+    if (err) {
+      next({ status: 401, message: "token invalid" });
+    } else {
+      req.decodedToken = decodedToken;
+      next();
+    }
+  });
   /*
     IMPLEMENT
 
