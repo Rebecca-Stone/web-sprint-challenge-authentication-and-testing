@@ -8,27 +8,22 @@ const Users = require("./auth-model");
 router.post("/register", checkNameTaken, (req, res, next) => {
   const { username, password } = req.body;
   const hash = bcrypt.hashSync(password, 8);
-  if (!username || !password) {
-    res.status(401).json({ message: "username and password required" });
-  } else {
-    Users.add({ username, password: hash })
-      .then((newUser) => {
-        res.status(201).json(newUser);
-      })
-      .catch(next);
-  }
+  !username || !password
+    ? res.status(401).json({ message: "username and password required" })
+    : Users.add({ username, password: hash })
+        .then((newUser) => {
+          res.status(201).json(newUser);
+        })
+        .catch(next);
 });
 
 router.post("/login", checkUserExists, (req, res, next) => {
-  if (bcrypt.compareSync(req.body.password, req.user.password)) {
-    const token = buildToken(req.user);
-    res.status(200).json({
-      message: `welcome, ${req.user.username}`,
-      token: token,
-    });
-  } else {
-    next({ status: 401, message: "invalid credentials" });
-  }
+  bcrypt.compareSync(req.body.password, req.user.password)
+    ? res.status(200).json({
+        message: `welcome, ${req.user.username}`,
+        token: buildToken(req.user),
+      })
+    : next({ status: 401, message: "invalid credentials" });
 });
 
 function buildToken(user) {

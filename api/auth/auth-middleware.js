@@ -3,11 +3,9 @@ const { findBy } = require("../auth/auth-model");
 const checkNameTaken = async (req, res, next) => {
   try {
     const user = await findBy({ username: req.body.username });
-    if (user.length !== 0) {
-      next({ status: 401, message: "username taken" });
-    } else {
-      next();
-    }
+    user.length !== 0
+      ? next({ status: 401, message: "username taken" })
+      : next();
   } catch (err) {
     next(err);
   }
@@ -16,12 +14,10 @@ const checkNameTaken = async (req, res, next) => {
 const checkUserExists = async (req, res, next) => {
   try {
     const [user] = await findBy({ username: req.body.username });
-    if (!user) {
-      next({ status: 401, message: "invalid credentials" });
-    } else {
-      req.user = user;
-      next();
-    }
+    !user
+      ? next({ status: 401, message: "invalid credentials" })
+      : (req.user = user);
+    next();
   } catch (err) {
     next(err);
   }
