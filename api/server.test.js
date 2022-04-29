@@ -36,7 +36,7 @@ describe("auth-router.js", () => {
         .send({ username: "baz", password: "12345" });
       const baz = await db("users").where("username", "baz").first();
       expect(baz).toMatchObject({ username: "baz" });
-    });
+    }, 2000000);
 
     test("[2] - saves the user with a bcrypted password instead of plain text", async () => {
       await request(server)

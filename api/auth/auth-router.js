@@ -1,15 +1,23 @@
-// Users must be able to call the `[POST] /api/auth/register` endpoint to create a new account, and the `[POST] /api/auth/login` endpoint to get a token.
-
-// We also need to make sure nobody without the token can call `[GET] /api/jokes` and gain access to our dad jokes.
-
-// We will hash the user's password using `bcryptjs`, and use JSON Web Tokens and the `jsonwebtoken` library.
-
-// - [ ] An authentication workflow with functionality for account creation and login, implemented inside `api/auth/auth-router.js`.
-
 const router = require("express").Router();
+const { JWT_SECRET } = require("../secrets/index");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { checkNameTaken } = require("./auth-middleware");
+const Users = require("./auth-model");
 
-router.post("/register", (req, res) => {
-  res.end("implement register, please!");
+router.post("/register", checkNameTaken, (req, res, next) => {
+  const { username, password } = req.body;
+  const hash = bcrypt.hashSync(password, 8);
+  if (!username || !password) {
+    res.status(401).json({ message: "username and password required" });
+  } else {
+    Users.add({ username, password: hash })
+      .then((newUser) => {
+        res.status(201).json(newUser);
+      })
+      .catch(next);
+  }
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -63,5 +71,16 @@ router.post("/login", (req, res) => {
       the response body should include a string exactly as follows: "invalid credentials".
   */
 });
+
+function buildToken(user) {
+  const payload = {
+    subject: user.user_id,
+    username: user.username,
+  };
+  const options = {
+    expiresIn: "1d",
+  };
+  return jwt.sign(payload, JWT_SECRET, options);
+}
 
 module.exports = router;
