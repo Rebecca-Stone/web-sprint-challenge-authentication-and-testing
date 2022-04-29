@@ -1,6 +1,4 @@
-// const { JWT_SECRET } = require("../secrets");
 const { findBy } = require("../auth/auth-model");
-// const jwt = require("jsonwebtoken");
 
 const checkNameTaken = async (req, res, next) => {
   try {

@@ -21,12 +21,9 @@ afterAll(async () => {
   await db.destroy();
 });
 
-// Write your tests here
 test("[0] sanity check", () => {
   expect(true).toBe(true);
 });
-
-// test 1 & 2
 
 describe("auth-router.js", () => {
   describe("POST /api/auth/register", () => {
@@ -46,8 +43,6 @@ describe("auth-router.js", () => {
       expect(bcrypt.compareSync("12345", baz.password)).toBeTruthy();
     });
   });
-
-  // test 3 & 4
 
   describe("POST /api/auth/login", () => {
     test("[3] - responds with the correct message on valid credentials", async () => {
@@ -79,14 +74,12 @@ describe("auth-router.js", () => {
   });
 });
 
-// test 5 & 6
-
 describe("jokes-router.js", () => {
   describe("GET /api/jokes", () => {
     test("[5] / - requests without a token can not log in", async () => {
       const res = await request(server).get("/api/jokes");
       expect(res.body.message).toMatch(/token required/i);
-    }, 2000000);
+    });
 
     test("[6] - requests with a token can view jokes", async () => {
       await request(server)
@@ -115,6 +108,6 @@ describe("jokes-router.js", () => {
           joke: "Why didn’t the skeleton cross the road? Because he had no guts.",
         },
       ]);
-    }, 2000000);
+    });
   });
 });
