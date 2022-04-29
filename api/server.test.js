@@ -36,7 +36,7 @@ describe("auth-router.js", () => {
         .send({ username: "baz", password: "12345" });
       const baz = await db("users").where("username", "baz").first();
       expect(baz).toMatchObject({ username: "baz" });
-    }, 2000000);
+    });
 
     test("[2] - saves the user with a bcrypted password instead of plain text", async () => {
       await request(server)
@@ -51,21 +51,29 @@ describe("auth-router.js", () => {
 
   describe("POST /api/auth/login", () => {
     test("[3] - responds with the correct message on valid credentials", async () => {
+      await request(server)
+        .post("/api/auth/register")
+        .send({ username: "baz", password: "12345" });
+
       const res = await request(server)
         .post("/api/auth/login")
-        .send({ username: "foo", password: "12345" });
+        .send({ username: "baz", password: "12345" });
 
-      expect(res.body.message).toMatch(/foo is back/i);
+      expect(res.body.message).toMatch(/welcome, baz/i);
     });
 
     test("[4] - responds with a token", async () => {
+      await request(server)
+        .post("/api/auth/register")
+        .send({ username: "baz", password: "12345" });
+
       let res = await request(server)
         .post("/api/auth/login")
-        .send({ username: "foo", password: "12345" });
+        .send({ username: "baz", password: "12345" });
       let decoded = jwtDecode(res.body.token);
       expect(decoded).toMatchObject({
-        subject: 1,
-        username: "foo",
+        subject: 3,
+        username: "baz",
       });
     });
   });
@@ -78,12 +86,18 @@ describe("jokes-router.js", () => {
     test("[5] / - requests without a token can not log in", async () => {
       const res = await request(server).get("/api/jokes");
       expect(res.body.message).toMatch(/token required/i);
-    });
+    }, 2000000);
 
     test("[6] - requests with a token can view jokes", async () => {
+      await request(server)
+        .post("/api/auth/register")
+        .send({ username: "baz", password: "12345" });
+
       let res = await request(server)
         .post("/api/auth/login")
-        .send({ username: "foo", password: "12345" })
+        .send({ username: "baz", password: "12345" });
+
+      res = await request(server)
         .get("/api/jokes")
         .set("Authorization", res.body.token);
 
@@ -101,6 +115,6 @@ describe("jokes-router.js", () => {
           joke: "Why didn’t the skeleton cross the road? Because he had no guts.",
         },
       ]);
-    });
+    }, 2000000);
   });
 });

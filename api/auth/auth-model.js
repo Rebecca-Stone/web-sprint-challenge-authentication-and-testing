@@ -9,10 +9,9 @@ function findBy(filter) {
 }
 
 function findById(user_id) {
-  return db("users").where("users.user_id", user_id).first();
+  return db("users").where("id", user_id).first();
 }
 
-// add
 async function add({ username, password }) {
   let created_user_id;
   await db.transaction(async (trx) => {
