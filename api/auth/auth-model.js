@@ -12,16 +12,18 @@ function findById(id) {
     .first();
 }
 
-async function add({ username, password }) {
-  let created_user_id;
-  await db.transaction(async (trx) => {
-    const [user_id] = await trx("users").insert({
-      username,
-      password,
-    });
-    created_user_id = user_id;
-  });
-  return findById(created_user_id);
+async function add(user) {
+  // let created_user_id;
+  // await db.transaction(async (trx) => {
+  //   const [user_id] = await trx("users").insert({
+  //     username,
+  //     password,
+  //   });
+  //   created_user_id = user_id;
+  // });
+  // return findById(created_user_id);
+  const [id] = await db("users").insert(user);
+  return findById(id);
 }
 
 module.exports = {
