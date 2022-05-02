@@ -24,14 +24,19 @@ router.post(
   }
 );
 
-router.post("/login", checkUserExists, (req, res, next) => {
-  bcrypt.compareSync(req.body.password, req.user.password)
-    ? res.status(200).json({
-        message: `welcome, ${req.user.username}`,
-        token: buildToken(req.user),
-      })
-    : next({ status: 401, message: "invalid credentials" });
-});
+router.post(
+  "/login",
+  checkUsernamePassword,
+  checkUserExists,
+  (req, res, next) => {
+    bcrypt.compareSync(req.body.password, req.user.password)
+      ? res.status(200).json({
+          message: `welcome, ${req.user.username}`,
+          token: buildToken(req.user),
+        })
+      : next({ status: 401, message: "invalid credentials" });
+  }
+);
 
 function buildToken(user) {
   const payload = {
