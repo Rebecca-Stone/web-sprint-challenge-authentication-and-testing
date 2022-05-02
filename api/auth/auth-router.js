@@ -2,27 +2,36 @@ const router = require("express").Router();
 const { JWT_SECRET } = require("../secrets/index");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { checkNameTaken, checkUserExists } = require("./auth-middleware");
+const {
+  checkUsernamePassword,
+  checkNameTaken,
+  checkUserExists,
+} = require("./auth-middleware");
 const Users = require("./auth-model");
 
-router.post("/register", checkNameTaken, (req, res, next) => {
-  const { username, password } = req.body;
-  const hash = bcrypt.hashSync(password, 8);
-  if (
-    !username ||
-    !password ||
-    username.trim().length === 0 ||
-    password.trim().length === 0
-  ) {
-    res.status(401).json({ message: "username and password required" });
-  } else {
+router.post(
+  "/register",
+  checkUsernamePassword,
+  checkNameTaken,
+  (req, res, next) => {
+    const { username, password } = req.body;
+    const hash = bcrypt.hashSync(password, 8);
+    // if (
+    // !username ||
+    // !password ||
+    // username.trim().length === 0 ||
+    // password.trim().length === 0
+    // ) {
+    // res.status(401).json({ message: "username and password required" });
+    // } else {
     Users.add({ username, password: hash })
       .then((newUser) => {
         res.status(201).json(newUser);
       })
       .catch(next);
   }
-});
+  // }
+);
 
 router.post("/login", checkUserExists, (req, res, next) => {
   bcrypt.compareSync(req.body.password, req.user.password)

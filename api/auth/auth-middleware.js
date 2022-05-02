@@ -1,5 +1,15 @@
 const { findBy } = require("../auth/auth-model");
 
+const checkUsernamePassword = (req, res, next) => {
+  if (!req.body.username || !req.body.password) {
+    res.status(400).json({
+      message: "username and password required",
+    });
+  } else {
+    next();
+  }
+};
+
 const checkNameTaken = async (req, res, next) => {
   try {
     const user = await findBy({ username: req.body.username });
@@ -23,4 +33,4 @@ const checkUserExists = async (req, res, next) => {
   }
 };
 
-module.exports = { checkNameTaken, checkUserExists };
+module.exports = { checkUsernamePassword, checkNameTaken, checkUserExists };
