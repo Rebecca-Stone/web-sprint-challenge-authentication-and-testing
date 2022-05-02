@@ -8,7 +8,12 @@ const Users = require("./auth-model");
 router.post("/register", checkNameTaken, (req, res, next) => {
   const { username, password } = req.body;
   const hash = bcrypt.hashSync(password, 8);
-  if (!username || !password) {
+  if (
+    !username ||
+    !password ||
+    username.trim().length === 0 ||
+    password.trim().length === 0
+  ) {
     res.status(401).json({ message: "username and password required" });
   } else {
     Users.add({ username, password: hash })
