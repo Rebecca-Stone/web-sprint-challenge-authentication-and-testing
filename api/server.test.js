@@ -42,10 +42,17 @@ describe("auth-router.js", () => {
       const baz = await db("users").where("username", "baz").first();
       expect(bcrypt.compareSync("12345", baz.password)).toBeTruthy();
     });
+
+    test("[3] - responds with the correct error message when no username or password", async () => {
+      const res = await request(server)
+        .post("/api/auth/register")
+        .send({ username: "", password: "" });
+      expect(res.body.message).toMatch(/username and password required/i);
+    });
   });
 
   describe("POST /api/auth/login", () => {
-    test("[3] - responds with the correct message on valid credentials", async () => {
+    test("[4] - responds with the correct message on valid credentials", async () => {
       await request(server)
         .post("/api/auth/register")
         .send({ username: "baz", password: "12345" });
@@ -57,7 +64,7 @@ describe("auth-router.js", () => {
       expect(res.body.message).toMatch(/welcome, baz/i);
     });
 
-    test("[4] - responds with a token", async () => {
+    test("[5] - responds with a token", async () => {
       await request(server)
         .post("/api/auth/register")
         .send({ username: "baz", password: "12345" });
@@ -76,12 +83,12 @@ describe("auth-router.js", () => {
 
 describe("jokes-router.js", () => {
   describe("GET /api/jokes", () => {
-    test("[5] / - requests without a token can not log in", async () => {
+    test("[6] / - requests without a token can not log in", async () => {
       const res = await request(server).get("/api/jokes");
       expect(res.body.message).toMatch(/token required/i);
     });
 
-    test("[6] - requests with a token can view jokes", async () => {
+    test("[7] - requests with a token can view jokes", async () => {
       await request(server)
         .post("/api/auth/register")
         .send({ username: "baz", password: "12345" });
